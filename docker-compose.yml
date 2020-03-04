@@ -14,3 +14,12 @@ services:
       context: ./auth-service
     expose:
       - 3000
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - ./storage/redis/data:/data
+    ports:
+      - '6379:6379'
+    logging:
+      driver: none

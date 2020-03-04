@@ -1,5 +1,5 @@
 import express from 'express';
-import { passwordAuth } from './handlers/factory/password-auth';
+import { getPasswordAuthHandlers } from './handlers/factory/password-auth';
 
 export const app = express()
-  .use('/auth', passwordAuth);
+  .use('/auth', getPasswordAuthHandlers());
