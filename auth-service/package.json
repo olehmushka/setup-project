@@ -1,0 +1,46 @@
+{
+  "name": "auth-service",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "yarn run clean && yarn run lint && echo Using TypeScript && tsc --version && tsc --pretty",
+    "clean": "rimraf dist",
+    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "start": "yarn run build && yarn run serve",
+    "start:dev": "yarn run build && yarn run serve:dev",
+    "start:prod": "yarn run build && yarn run serve:pm2-runtime",
+    "serve": "node ./dist/main.js",
+    "serve:debug": "set DEBUG=app*&&node ./dist/main.js",
+    "serve:pm2": "npx pm2 start pm2.yml",
+    "serve:pm2-runtime": " npx pm2-runtime start pm2.yml",
+    "serve:dev": "set DEBUG=app*&& npx nodemon --inspect ./dist/main.js",
+    "stop": "npx pm2 stop all",
+    "watch": "yarn run build -- --watch"
+  },
+  "author": "olehmushka",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "debug": "^3.1.0",
+    "express": "^4.17.1",
+    "pm2": "^3.0.2",
+    "reflect-metadata": "^0.1.12",
+    "rimraf": "^2.6.2",
+    "ts-node": "^6.0.4",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.3",
+    "@types/cookie-parser": "^1.4.1",
+    "@types/debug": "0.0.30",
+    "@types/express": "^4.11.0",
+    "@types/http-errors": "^1.6.1",
+    "@types/node": "^9.3.0",
+    "@types/uuid": "^3.4.3",
+    "nodemon": "^2.0.2"
+  }
+}

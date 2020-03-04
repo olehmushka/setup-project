@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nginx-service:
+    restart: always
+    build:
+      context: ./nginx-service
+    ports:
+      - '80:80'
+    links:
+      - auth-service
+  auth-service:
+    build:
+      context: ./auth-service
+    expose:
+      - 3000
