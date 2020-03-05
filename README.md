@@ -1,10 +1,14 @@
 # Auth Accounting
 
-## Build project
+## Build and run the project
+
+`bash ./scripts/build.sh`
+
+## Build the project
 
 `docker-compose build`
 
-## Run project
+## Run the project
 
 `docker-compose up -d`
 
