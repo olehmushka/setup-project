@@ -1,6 +1,10 @@
-import express from 'express';
-import { getClient } from './lib/redis/redis';
+import { server } from './server';
+import { getClient as getRedisClient } from './lib/redis/redis';
+import { getClient as getSqlClient } from './lib/sql/sql';
 import { getPasswordAuthHandlers } from './handlers/factory/password-auth';
 
-export const app = express()
-  .use('/auth', getPasswordAuthHandlers(getClient()));
+export const app = server
+  .use('/auth', getPasswordAuthHandlers(
+    getRedisClient(),
+    getSqlClient(),
+  ));

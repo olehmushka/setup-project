@@ -2,10 +2,10 @@ import * as redis from 'redis';
 
 export const redisHost = 'redis://redis-service';
 
-export const getClient = () => new RedisService(redis.createClient(redisHost))
+export const getClient = () => new RedisService(redis.createClient(redisHost));
 
 export class RedisService {
-  private _client: redis.RedisClient
+  private _client: redis.RedisClient;
 
   constructor(client: redis.RedisClient) {
     this._client = client;
