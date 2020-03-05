@@ -1,0 +1,2 @@
+# redis storage @todo remove it and replace by vendor's service
+storage/

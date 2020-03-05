@@ -1,8 +1,8 @@
 FROM node:12.16.1-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY . /app
+COPY . /usr/src/app
 RUN yarn install
 
 EXPOSE 3000
