@@ -1,98 +1,97 @@
+```typescript
 import { Request, Response } from 'express';
 import * as uuid from 'uuid';
 import { SqlService } from '../../lib/sql/sql';
 import _ from '../../lib/utils/utils';
 
-class ExpectedRequest {
-  public name: string;
-  public password: string;
-  public roles?: string[];
+interface ExpectedRequest {
+  name: string;
+  password: string;
+  roles?: string[];
 }
 
-class OKResponse {
-  public success: boolean;
-  public data: {
-    id: string,
-    name: string,
+interface OKResponse {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
   };
 }
-class BadRequestResponse {
-  public success: boolean;
-  public errors: string[];
+
+interface BadRequestResponse {
+  success: boolean;
+  errors: string[];
 }
 
-const validate = (req: Request): Error[] => {
-  const errors: Error[] = [];
+const validate = (req: Request): string[] => {
+  const errors: string[] = [];
   const minPasswordLength = 6;
 
   if (_.isEmpty(req.body)) {
-    errors.push(new Error('Body is empty'));
+    errors.push('Body is empty');
   }
 
   if (_.isEmpty(req.body.name)) {
-    errors.push(new Error('name is empty'));
+    errors.push('Name is empty');
   }
 
   if (_.isEmpty(req.body.password)) {
-    errors.push(new Error('password is empty'));
+    errors.push('Password is empty');
   } else if (!_.isString(req.body.password)) {
-    errors.push(new Error('password is not string'));
+    errors.push('Password is not a string');
   } else if (req.body.password.length < minPasswordLength) {
-    errors.push(new Error(`password length is less than ${minPasswordLength}`));
+    errors.push(`Password length is less than ${minPasswordLength}`);
   }
 
   if (!_.isArray(req.body.roles)) {
-    errors.push(new Error('roles is not array'));
+    errors.push('Roles is not an array');
   }
 
   return errors;
 };
 
-const deserializeRequest = (req: Request): ExpectedRequest => {
-  if (Array.isArray(req.body.roles) && req.body.roles.length > 0) {
-    return {
-      name: req.body.name,
-      password: req.body.password,
-      roles: req.body.roles,
-    };
-  }
-  return {
-    name: req.body.name,
-    password: req.body.password,
-  };
-};
+const deserializeRequest = (req: Request): ExpectedRequest => ({
+  name: req.body.name,
+  password: req.body.password,
+  roles: Array.isArray(req.body.roles) && req.body.roles.length > 0 ? req.body.roles : undefined,
+});
 
-const serializeResponse = (u: ExpectedRequest & { id: string }, isSuccess: boolean): OKResponse => {
-  return {
-    success: isSuccess,
-    data: {
-      id: u.id,
-      name: u.name,
-    },
-  };
-};
+const serializeResponse = (user: ExpectedRequest & { id: string }): OKResponse => ({
+  success: true,
+  data: {
+    id: user.id,
+    name: user.name,
+  },
+});
 
-const serializeError = (errors: Error[]): BadRequestResponse =>
-  ({
-    success: false,
-    errors: errors.map(err => err.message),
-  });
+const serializeError = (errors: string[]): BadRequestResponse => ({
+  success: false,
+  errors,
+});
 
-export const getSignUpHandler = (sql: SqlService): (req: Request, res: Response) => void =>
-  async (req: Request, res: Response) => {
-    try {
-      const validationErrors = validate(req);
-      if (validationErrors.length !== 0) {
-        res.status(400).json(serializeError(validationErrors));
-      }
-
-      const u = { ...deserializeRequest(req), id: uuid.v4() };
-      const users = await sql.Send(u);
-      if (users.length === 0) {
-        throw new Error('user was not created');
-      }
-      res.status(200).json(serializeResponse(u, true));
-    } catch (err) {
-      res.status(500).json(serializeError([err as Error]));
+export const getSignUpHandler = (sql: SqlService) => async (req: Request, res: Response) => {
+  try {
+    const validationErrors = validate(req);
+    if (validationErrors.length > 0) {
+      return res.status(400).json(serializeError(validationErrors));
     }
-  };
+
+    const user = { ...deserializeRequest(req), id: uuid.v4() };
+    const users = await sql.Send(user);
+    if (users.length === 0) {
+      throw new Error('User was not created');
+    }
+    res.status(200).json(serializeResponse(user));
+  } catch (err) {
+    res.status(500).json(serializeError([err.message]));
+  }
+};
+```
+
+### Improvements Made:
+1. **Interface Usage**: Changed `class` to `interface` for `ExpectedRequest`, `OKResponse`, and `BadRequestResponse` since they are used as data structures.
+2. **Error Handling**: Changed `Error[]` to `string[]` for validation errors to simplify error handling and serialization.
+3. **Return Early**: Used early return in the validation error check to avoid unnecessary processing.
+4. **Destructuring**: Used object destructuring for cleaner code when creating the user object.
+5. **Error Message Extraction**: Directly extracted error messages from `Error` objects for serialization.
+6. **Code Consistency**: Ensured consistent naming and formatting throughout the code.
