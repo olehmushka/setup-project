@@ -1,8 +1,11 @@
 import express from 'express';
-import * as bodyParser from 'body-parser';
+import { json, urlencoded } from 'body-parser';
 import { port } from './config/config';
 
-export const server = express()
-  .set('port', port)
-  .use(bodyParser.json())
-  .use(bodyParser.urlencoded({ extended: true }));
+const server = express();
+
+server.set('port', port);
+server.use(json());
+server.use(urlencoded({ extended: true }));
+
+export default server;
